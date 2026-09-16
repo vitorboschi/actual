@@ -19,6 +19,7 @@ type PayeesListProps = {
   onPayeePress: (payee: PayeeEntity) => void;
   onPayeeDelete: (payee: PayeeEntity) => void;
   onPayeeRuleAction: (payee: PayeeEntity) => void;
+  onPayeeViewTransactions: (payee: PayeeEntity) => void;
 };
 
 export function PayeesList({
@@ -29,6 +30,7 @@ export function PayeesList({
   onPayeePress,
   onPayeeDelete,
   onPayeeRuleAction,
+  onPayeeViewTransactions,
 }: PayeesListProps) {
   const { t } = useTranslation();
 
@@ -92,6 +94,7 @@ export function PayeesList({
               onAction={() => onPayeePress(payee)}
               onDelete={() => onPayeeDelete(payee)}
               onViewRules={() => onPayeeRuleAction(payee)}
+              onViewTransactions={() => onPayeeViewTransactions(payee)}
             />
           )}
         </GridList>

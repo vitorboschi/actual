@@ -14,7 +14,7 @@ type ActionableGridListItemProps<T> = {
   actions?: ReactNode | ((params: { close: () => void }) => ReactNode);
   actionsBackgroundColor?: string;
   actionsWidth?: number;
-  children?: ReactNode;
+  children?: ReactNode | ((params: { isRevealed: boolean }) => ReactNode);
 } & Omit<WithRequired<GridListItemProps<T>, 'value'>, 'children'>;
 
 export function ActionableGridListItem<T extends object>({
@@ -127,7 +127,7 @@ export function ActionableGridListItem<T extends object>({
           onPressStart={e => e.continuePropagation()}
           onClick={handleAction}
         >
-          {children}
+          {typeof children === 'function' ? children({ isRevealed }) : children}
         </Button>
 
         {/* Actions that appear when swiped */}

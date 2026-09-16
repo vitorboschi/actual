@@ -1,9 +1,10 @@
 // @ts-strict-ignore
 import { memo, useMemo, useRef } from 'react';
 import type { CSSProperties } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { SvgBookmark, SvgLightBulb } from '@actual-app/components/icons/v1';
+import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { Tooltip } from '@actual-app/components/tooltip';
 import type { PayeeEntity } from '@actual-app/core/types/models';
@@ -15,6 +16,7 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 
 import { PayeePillButton } from './PayeePillButton';
 import { PayeeRuleCountLabel } from './PayeeRuleCountLabel';
+import { useViewPayeeTransactions } from './useViewPayeeTransactions';
 
 type RuleButtonProps = {
   ruleCount: number;
@@ -25,9 +27,13 @@ type RuleButtonProps = {
 
 function RuleButton({ ruleCount, focused, onEdit, onClick }: RuleButtonProps) {
   return (
+    // Fixed width so the pill to its left lines up across rows even though
+    // this label changes length ("Create rule" vs "3 associated rules")
     <PayeePillButton
       name="rule-count"
       variant="notice"
+      width={150}
+      alignItems="flex-end"
       focused={focused}
       onEdit={onEdit}
       onClick={onClick}
@@ -81,6 +87,7 @@ export const PayeeTableRow = memo(
     const { id } = payee;
     const dispatchSelected = useSelectedDispatch();
     const selectedItems = useSelectedItems();
+    const viewPayeeTransactions = useViewPayeeTransactions();
     const selectedIds = useMemo(() => {
       const ids =
         selectedItems && selectedItems.size > 0 ? selectedItems : [payee.id];
@@ -96,10 +103,20 @@ export const PayeeTableRow = memo(
 
     const { t } = useTranslation();
 
+    // Transfer payees can never be selected, so a bulk action triggered from
+    // one of their rows would apply to an unrelated set of payees
+    const transactionPayeeIds =
+      payee.transfer_acct != null ? [id] : selectedIds;
+
     const triggerRef = useRef(null);
     useContextMenu({
       triggerRef,
       items: [
+        {
+          name: 'view-transactions',
+          text: t('View transactions'),
+          onClick: () => viewPayeeTransactions(transactionPayeeIds),
+        },
         {
           name: 'delete',
           text: t('Delete'),
@@ -219,6 +236,17 @@ export const PayeeTableRow = memo(
           onExpose={() => onEdit(id, 'name')}
           inputProps={{ readOnly: !!payee.transfer_acct }}
         />
+        <PayeePillButton
+          name="view-transactions"
+          variant="neutral"
+          focused={focusedField === 'view-transactions'}
+          onEdit={() => onEdit(id, 'view-transactions')}
+          onClick={() => viewPayeeTransactions([id])}
+        >
+          <Text style={{ paddingRight: 5 }}>
+            <Trans>View transactions</Trans>
+          </Text>
+        </PayeePillButton>
         <RuleButton
           ruleCount={ruleCount}
           focused={focusedField === 'rule-count'}

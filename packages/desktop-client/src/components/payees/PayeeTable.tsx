@@ -57,8 +57,8 @@ export const PayeeTable = forwardRef<
 
     const tableNavigator = useTableNavigator(payees, item =>
       item.transfer_acct == null
-        ? ['select', 'name', 'rule-count']
-        : ['rule-count'],
+        ? ['select', 'name', 'view-transactions', 'rule-count']
+        : ['view-transactions', 'rule-count'],
     );
 
     return (

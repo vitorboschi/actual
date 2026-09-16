@@ -10,6 +10,7 @@ import type { PayeeEntity, RuleEntity } from '@actual-app/core/types/models';
 
 import { Search } from '#components/common/Search';
 import { MobilePageHeader, Page } from '#components/Page';
+import { useViewPayeeTransactions } from '#components/payees/useViewPayeeTransactions';
 import { useNavigate } from '#hooks/useNavigate';
 import { usePayeeRuleCounts } from '#hooks/usePayeeRuleCounts';
 import { usePayees } from '#hooks/usePayees';
@@ -24,6 +25,7 @@ export function MobilePayeesPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data: payees = [], isPending } = usePayees();
+  const viewPayeeTransactions = useViewPayeeTransactions();
   const { showUndoNotification } = useUndo();
   const [filter, setFilter] = useState('');
   const { data: ruleCounts = new Map(), isPending: isRuleCountsLoading } =
@@ -142,6 +144,7 @@ export function MobilePayeesPage() {
         onPayeePress={handlePayeePress}
         onPayeeDelete={handlePayeeDelete}
         onPayeeRuleAction={handlePayeeRuleAction}
+        onPayeeViewTransactions={payee => viewPayeeTransactions([payee.id])}
       />
     </Page>
   );

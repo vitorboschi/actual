@@ -18,6 +18,7 @@ type PayeesListItemProps = {
   isRuleCountLoading?: boolean;
   onDelete: () => void;
   onViewRules: () => void;
+  onViewTransactions: () => void;
 } & WithRequired<GridListItemProps<PayeeEntity>, 'value'>;
 
 export function PayeesListItem({
@@ -26,6 +27,7 @@ export function PayeesListItem({
   isRuleCountLoading,
   onDelete,
   onViewRules,
+  onViewTransactions,
   ...props
 }: PayeesListItemProps) {
   const { t } = useTranslation();
@@ -39,10 +41,22 @@ export function PayeesListItem({
       id={payee.id}
       value={payee}
       textValue={label}
-      actionsWidth={200}
+      actionsWidth={270}
       actions={
         !payee.transfer_acct && (
           <View style={{ flexDirection: 'row', flex: 1 }}>
+            <Button
+              variant="bare"
+              onPress={onViewTransactions}
+              style={{
+                color: theme.pillText,
+                backgroundColor: theme.pillBackground,
+                flex: 1,
+                borderRadius: 0,
+              }}
+            >
+              <Trans>Transactions</Trans>
+            </Button>
             <Button
               variant="bare"
               onPress={onViewRules}
@@ -75,63 +89,69 @@ export function PayeesListItem({
       }
       {...props}
     >
-      <SpaceBetween gap={5} style={{ flex: 1 }}>
-        {payee.favorite && (
-          <SvgBookmark
-            aria-hidden
-            focusable={false}
-            width={15}
-            height={15}
-            style={{
-              color: theme.pageText,
-              flexShrink: 0,
-            }}
-          />
-        )}
-        <SpaceBetween
-          style={{
-            justifyContent: 'space-between',
-            flex: 1,
-            alignItems: 'flex-start',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 500,
-              color: payee.transfer_acct
-                ? theme.pageTextSubdued
-                : theme.pageText,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              flex: 1,
-              textAlign: 'left',
-            }}
-            title={label}
-          >
-            {label}
-          </span>
-
-          <span
-            style={{
-              borderRadius: 4,
-              padding: '3px 6px',
-              backgroundColor: theme.noticeBackground,
-              border: '1px solid ' + theme.noticeBackground,
-              color: theme.noticeTextDark,
-              fontSize: 12,
-              flexShrink: 0,
-            }}
-          >
-            <PayeeRuleCountLabel
-              count={ruleCount}
-              isLoading={isRuleCountLoading}
-              style={{ fontSize: 12 }}
+      {({ isRevealed }) => (
+        <SpaceBetween gap={5} style={{ flex: 1 }}>
+          {payee.favorite && (
+            <SvgBookmark
+              aria-hidden
+              focusable={false}
+              width={15}
+              height={15}
+              style={{
+                color: theme.pageText,
+                flexShrink: 0,
+              }}
             />
-          </span>
+          )}
+          <SpaceBetween
+            style={{
+              justifyContent: 'space-between',
+              flex: 1,
+              alignItems: 'flex-start',
+            }}
+          >
+            <span
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                color: payee.transfer_acct
+                  ? theme.pageTextSubdued
+                  : theme.pageText,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                flex: 1,
+                textAlign: 'left',
+              }}
+              title={label}
+            >
+              {label}
+            </span>
+
+            <span
+              style={{
+                borderRadius: 4,
+                padding: '3px 6px',
+                backgroundColor: theme.noticeBackground,
+                border: '1px solid ' + theme.noticeBackground,
+                color: theme.noticeTextDark,
+                fontSize: 12,
+                flexShrink: 0,
+                // The swipe actions only cover part of a narrow screen, so
+                // hide the pill while they are open instead of showing it
+                // next to the action buttons
+                visibility: isRevealed ? 'hidden' : 'visible',
+              }}
+            >
+              <PayeeRuleCountLabel
+                count={ruleCount}
+                isLoading={isRuleCountLoading}
+                style={{ fontSize: 12 }}
+              />
+            </span>
+          </SpaceBetween>
         </SpaceBetween>
-      </SpaceBetween>
+      )}
     </ActionableGridListItem>
   );
 }
