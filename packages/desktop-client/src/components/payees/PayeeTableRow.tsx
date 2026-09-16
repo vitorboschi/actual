@@ -3,27 +3,17 @@ import { memo, useMemo, useRef } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  SvgArrowThinRight,
-  SvgBookmark,
-  SvgLightBulb,
-} from '@actual-app/components/icons/v1';
+import { SvgBookmark, SvgLightBulb } from '@actual-app/components/icons/v1';
 import { theme } from '@actual-app/components/theme';
 import { Tooltip } from '@actual-app/components/tooltip';
 import type { PayeeEntity } from '@actual-app/core/types/models';
 
-import {
-  Cell,
-  CellButton,
-  CustomCell,
-  InputCell,
-  Row,
-  SelectCell,
-} from '#components/table';
+import { CustomCell, InputCell, Row, SelectCell } from '#components/table';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useSelectedDispatch, useSelectedItems } from '#hooks/useSelected';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 
+import { PayeePillButton } from './PayeePillButton';
 import { PayeeRuleCountLabel } from './PayeeRuleCountLabel';
 
 type RuleButtonProps = {
@@ -35,31 +25,15 @@ type RuleButtonProps = {
 
 function RuleButton({ ruleCount, focused, onEdit, onClick }: RuleButtonProps) {
   return (
-    <Cell
+    <PayeePillButton
       name="rule-count"
-      width="auto"
+      variant="notice"
       focused={focused}
-      style={{ padding: '0 10px' }}
-      plain
+      onEdit={onEdit}
+      onClick={onClick}
     >
-      <CellButton
-        style={{
-          borderRadius: 4,
-          padding: '3px 6px',
-          backgroundColor: theme.noticeBackground,
-          border: '1px solid ' + theme.noticeBackground,
-          color: theme.noticeTextDark,
-          fontSize: 12,
-          cursor: 'pointer',
-          ':hover': { backgroundColor: theme.noticeBackgroundLight },
-        }}
-        onEdit={onEdit}
-        onSelect={onClick}
-      >
-        <PayeeRuleCountLabel count={ruleCount} style={{ paddingRight: 5 }} />
-        <SvgArrowThinRight style={{ width: 8, height: 8 }} />
-      </CellButton>
-    </Cell>
+      <PayeeRuleCountLabel count={ruleCount} style={{ paddingRight: 5 }} />
+    </PayeePillButton>
   );
 }
 
